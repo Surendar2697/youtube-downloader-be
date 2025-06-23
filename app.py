@@ -10,11 +10,11 @@ CORS(app)  # Enable CORS for all routes
 
 # Configuration
 DOWNLOAD_DIR = "downloads"
-BASE_URL = "https://youtube-downloader-be-2.onrender.com/download"  # Updated to Render URL
-FFMPEG_PATH = r"./fm/bin/ffmpeg.exe"  # Relative path for portability
+BASE_URL = "https://youtube-downloader-be-2.onrender.com/downloads/"  # Updated for Render
+FFMPEG_PATH = "./fm/bin/ffmpeg"  # Use forward slashes and Linux-compatible path
 
 def get_ffmpeg_path():
-    """Return the hardcoded path to the FFmpeg executable."""
+    """Return the path to the FFmpeg executable."""
     if not os.path.exists(FFMPEG_PATH):
         return None
     return FFMPEG_PATH
@@ -22,21 +22,18 @@ def get_ffmpeg_path():
 def download_youtube_video(url, choice, ffmpeg_path, output_path):
     """Download YouTube video/audio with specified quality using provided FFmpeg."""
     try:
-        # Create output directory if it doesn't exist
         os.makedirs(output_path, exist_ok=True)
 
-        # Generate unique filename
         unique_id = str(uuid.uuid4())
         output_template = os.path.join(output_path, f'%(title)s_{unique_id}.%(ext)s')
 
-        # Base options for yt-dlp
         ydl_opts = {
             'outtmpl': output_template,
             'ffmpeg_location': ffmpeg_path,
             'noplaylist': True,
         }
 
-        # Set format based on user choice
+        # Select format
         if choice == '1':  # Low quality video
             ydl_opts['format'] = 'worstvideo[ext=mp4]+bestaudio[ext=m4a]/worst[ext=mp4]'
             ydl_opts['merge_output_format'] = 'mp4'
@@ -54,16 +51,13 @@ def download_youtube_video(url, choice, ffmpeg_path, output_path):
                 'preferredquality': '192',
             }]
 
-        # Download the video/audio
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=True)
             filename = ydl.prepare_filename(info)
 
-            # Fix extension if MP3
             if choice == '4':
                 filename = filename.rsplit('.', 1)[0] + '.mp3'
 
-            # Make filename URL-safe
             safe_filename = quote(os.path.basename(filename))
             download_url = f"{BASE_URL}{safe_filename}"
             return download_url
@@ -104,5 +98,5 @@ def serve_file(filename):
 
 if __name__ == "__main__":
     os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-    port = int(os.environ.get("PORT", 5000))  # Use Render-assigned port
+    port = int(os.environ.get("PORT", 5000))  # Render will set this
     app.run(host="0.0.0.0", port=port, debug=True)
