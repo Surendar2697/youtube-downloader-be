@@ -10,8 +10,8 @@ CORS(app)  # Enable CORS for all routes
 
 # Configuration
 DOWNLOAD_DIR = "downloads"
-BASE_URL = "http://127.0.0.1:5000/downloads/"  # Matches your server URL
-FFMPEG_PATH = r".\fm\bin\ffmpeg.exe"  # Update with your FFmpeg path
+BASE_URL = "https://your-app-name.onrender.com/downloads/"  # Replace 'your-app-name' after deployment
+FFMPEG_PATH = r"./fm/bin/ffmpeg.exe"  # Relative path for portability
 
 def get_ffmpeg_path():
     """Return the hardcoded path to the FFmpeg executable."""
@@ -104,4 +104,5 @@ def serve_file(filename):
 
 if __name__ == "__main__":
     os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Use Render-assigned port
+    app.run(host="0.0.0.0", port=port, debug=True)
