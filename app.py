@@ -10,7 +10,7 @@ CORS(app)  # Enable CORS for all routes
 
 # Configuration
 DOWNLOAD_DIR = "downloads"
-BASE_URL = "https://youtube-downloader-be-2.onrender.com/downloads/"  # Updated to Render URL
+BASE_URL = "https://youtube-downloader-be-2.onrender.com/download"  # Updated to Render URL
 FFMPEG_PATH = r"./fm/bin/ffmpeg.exe"  # Relative path for portability
 
 def get_ffmpeg_path():
